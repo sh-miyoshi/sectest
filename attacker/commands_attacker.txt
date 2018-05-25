@@ -1,0 +1,8 @@
+- wiretap
+  tcpdump -xX -B 65536 dst host <pod-ip> and port 4567 -i weave
+
+- spoofing1
+  curl -XPOST http://<svc-ip>:4567/api -d '{"user":"root", "password":"password"}'
+
+- spoofing2
+  curl -k -XPOST https://<svc-ip>:4567/api -d '{"user":"root", "password":"password"}' --key /etc/certs/key.pem  --cert /etc/certs/cert-chain.pem

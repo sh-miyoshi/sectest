@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dangerarea
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: attacker
+  namespace: dangerarea
+spec:
+  containers:
+  - image: docker.io/smiyoshi/sectest-attacker:latest
+    name: attacker
+    command:
+      - sleep
+      - "3600"
+#    volumeMounts:
+#      - name: istio-certs
+#        mountPath: /etc/certs
+#        readOnly: true
+#  volumes:
+#  - name: istio-certs
+#    secret:
+#      secretName: istio.default
+  hostNetwork: true

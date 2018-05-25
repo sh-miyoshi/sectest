@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mysql-apiserver
+  namespace: default
+  labels:
+    app: mysql-apiserver
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql-apiserver
+    spec:
+      containers:
+      - name: mysql-apiserver
+        image: docker.io/smiyoshi/sectest-apiserver:latest
+#        imagePullPolicy: Always
+        env:
+        - name: MYSQL_ADDR
+          value: mysql.default.svc.cluster.local
+        ports:
+          - containerPort: 4567
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-apiserver
+  labels:
+    app: mysql-apiserver
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 4567
+    targetPort: 4567
+  type: ClusterIP
+  selector:
+    app: mysql-apiserver

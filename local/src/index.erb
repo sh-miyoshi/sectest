@@ -1,0 +1,17 @@
+<html>
+  <head>
+    <title>My web page</title>
+  </head>
+  <body>
+    <form action="data" method="POST">
+      user: <input type="text" name="user" value=""><br/>
+      password: <input type="password" name="password" value=""><br/>
+      <input type="submit" value="send">
+    </form>
+    <% if @val then %>
+      <% @val.each do |v| %>
+        <%= v %><br />
+      <% end %>
+    <% end %>
+  </body>
+</html>
