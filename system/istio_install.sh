@@ -22,8 +22,6 @@ ls $NAME
 BINDIR="$(cd $NAME/bin; pwd)"
 
 sudo \cp -f $BINDIR/istioctl /usr/local/bin/
-#echo "source <(istioctl completion bash)" >> ~/.profile
-#source ~/.profile
 
 cd $NAME/install/kubernetes
 sed -i -e 's/type: LoadBalancer/type: NodePort/g' istio-auth.yaml
