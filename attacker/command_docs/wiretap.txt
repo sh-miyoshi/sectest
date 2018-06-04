@@ -1,0 +1,5 @@
+# Usage
+  kubectl get pods -o wide
+  * copy ip address of mysql-apiserver pod as <pod-ip>
+  kubectl exec -it attacker bash -n dangerarea
+  tcpdump -xX -B 65536 dst host <pod-ip> and port 4567 -i weave

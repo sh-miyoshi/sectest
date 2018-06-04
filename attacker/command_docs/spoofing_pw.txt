@@ -1,0 +1,4 @@
+# Usage
+  kubectl exec -it attacker bash -n dangerarea
+  nslookup mysql-apiserver.default.svc.cluster.local 10.96.0.10
+  curl -XPOST http://<svc-ip>:4567/api -d '{"user":"root", "password":"password"}'
