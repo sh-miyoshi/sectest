@@ -1,3 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: istio-system
 ---
 # Source: istio/charts/mixer/templates/configmap.yaml
 apiVersion: v1
@@ -566,13 +570,13 @@ data:
     # from istio Pilot. Lower refresh delay results in higher CPU
     # utilization and potential performance loss in exchange for faster
     # convergence. Tweak this value according to your setup.
-    rdsRefreshDelay: 1s
+    rdsRefreshDelay: 10s
     #
     defaultConfig:
       # NOTE: If you change any values in this section, make sure to make
       # the same changes in start up args in istio-ingress pods.
       # See rdsRefreshDelay for explanation about this setting.
-      discoveryRefreshDelay: 1s
+      discoveryRefreshDelay: 10s
       #
       # TCP connection timeout between Envoy & the application, and between Envoys.
       connectTimeout: 10s
@@ -684,7 +688,7 @@ data:
         image: [[ if (isset .ObjectMeta.Annotations "sidecar.istio.io/proxyImage") -]]
         "[[ index .ObjectMeta.Annotations "sidecar.istio.io/proxyImage" ]]"
         [[ else -]]
-        docker.io/istio/proxy:0.8.0
+        docker.io/istio/proxyv2:0.8.0
         [[ end -]]
         args:
         - proxy
@@ -783,20 +787,6 @@ metadata:
   labels:
     app: egressgateway
     chart: egressgateway-0.8.0
-    heritage: Tiller
-    release: istio
-
----
-# Source: istio/charts/ingress/templates/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: istio-ingress-service-account
-  namespace: istio-system
-  labels:
-    app: ingress
-    chart: ingress-0.8.0
     heritage: Tiller
     release: istio
 
@@ -1683,26 +1673,6 @@ spec:
 
 
 ---
-# Source: istio/charts/ingress/templates/clusterrole.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRole
-metadata:
-  labels:
-    app: ingress
-    chart: ingress-0.8.0
-    heritage: Tiller
-    release: istio
-  name: istio-ingress-istio-system
-rules:
-- apiGroups: ["extensions"]
-  resources: ["thirdpartyresources", "ingresses"]
-  verbs: ["get", "watch", "list", "update"]
-- apiGroups: [""]
-  resources: ["configmaps", "pods", "endpoints", "services"]
-  verbs: ["get", "watch", "list"]
-
----
 # Source: istio/charts/mixer/templates/clusterrole.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1808,23 +1778,6 @@ rules:
   verbs: ["get", "list", "update", "delete"]
 
 ---
-# Source: istio/charts/ingress/templates/clusterrolebinding.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: ClusterRoleBinding
-metadata:
-  name: istio-ingress-istio-system
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-#  name: istio-pilot-istio-system
-  name: cluster-admin
-subjects:
-  - kind: ServiceAccount
-    name: istio-ingress-service-account
-    namespace: istio-system
-
----
 # Source: istio/charts/mixer/templates/clusterrolebinding.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1907,31 +1860,28 @@ subjects:
     namespace: istio-system
 
 ---
-# Source: istio/charts/ingress/templates/service.yaml
+# Source: istio/charts/egressgateway/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-ingress
-  namespace: istio-system
+  name: istio-egressgateway
+  namespace: istio-system    
   labels:
-    chart: ingress-0.8.0
+    chart: egressgateway-0.8.0
     release: istio
     heritage: Tiller
-    istio: ingress
+    istio: egressgateway
 spec:
-  type: NodePort
+  type: ClusterIP
   selector:
-    istio: ingress
+    istio: egressgateway
   ports:
     -
       name: http
-      nodePort: 32000
       port: 80
     -
       name: https
-      nodePort: 32001
-      port: 443  
----
+      port: 443
 
 ---
 # Source: istio/charts/ingressgateway/templates/service.yaml
@@ -2129,38 +2079,38 @@ spec:
     istio: citadel
 
 ---
-# Source: istio/charts/ingress/templates/deployment.yaml
+# Source: istio/charts/egressgateway/templates/deployment.yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: istio-ingress
+  name: istio-egressgateway
   namespace: istio-system
   labels:
-    app: ingress
-    chart: ingress-0.8.0
+    app: egressgateway
+    chart: egressgateway-0.8.0
     release: istio
     heritage: Tiller
-    istio: ingress
+    istio: egressgateway
 spec:
   replicas: 
   template:
     metadata:
       labels:
-        istio: ingress
+        istio: egressgateway
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
-      serviceAccountName: istio-ingress-service-account
+      serviceAccountName: istio-egressgateway-service-account
       containers:
-        - name: ingress
-          image: "docker.io/istio/proxy:0.8.0"
+        - name: egressgateway
+          image: "docker.io/istio/proxyv2:0.8.0"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
             - containerPort: 443
           args:
           - proxy
-          - ingress
+          - router
           - -v
           - "2"
           - --discoveryRefreshDelay
@@ -2172,7 +2122,7 @@ spec:
           - --connectTimeout
           - '10s' #connectTimeout
           - --serviceCluster
-          - istio-ingress
+          - istio-egressgateway
           - --zipkinAddress
           - zipkin:9411
           - --statsdUdpAddress
@@ -2200,24 +2150,54 @@ spec:
           - name: INSTANCE_IP
             valueFrom:
               fieldRef:
-                apiVersion: v1
                 fieldPath: status.podIP
+          - name: ISTIO_META_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
           volumeMounts:
           - name: istio-certs
             mountPath: /etc/certs
-            readOnly: true
-          - name: ingress-certs
-            mountPath: /etc/istio/ingress-certs
             readOnly: true
       volumes:
       - name: istio-certs
         secret:
           secretName: "istio.default"
           optional: true
-      - name: ingress-certs
-        secret:
-          secretName: istio-ingress-certs
-          optional: true
+      affinity:      
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - ppc64le
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+
 ---
 # Source: istio/charts/ingressgateway/templates/deployment.yaml
 apiVersion: extensions/v1beta1
@@ -2240,8 +2220,7 @@ spec:
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
-      serviceAccountName: istio-ingress-service-account
-#      serviceAccountName: istio-ingressgateway-service-account
+      serviceAccountName: istio-ingressgateway-service-account
       containers:
         - name: ingressgateway
           image: "docker.io/istio/proxyv2:0.8.0"
@@ -2314,6 +2293,40 @@ spec:
         secret:
           secretName: "istio-ingressgateway-certs"
           optional: true
+      affinity:      
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - ppc64le
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+
 ---
 # Source: istio/charts/mixer/templates/deployment.yaml
 
@@ -2476,7 +2489,7 @@ spec:
             {}
             
       - name: istio-proxy
-        image: "docker.io/istio/proxy:0.8.0"
+        image: "docker.io/istio/proxyv2:0.8.0"
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9091
@@ -2514,6 +2527,8 @@ spec:
         - name: istio-certs
           mountPath: /etc/certs
           readOnly: true
+
+--- 
 
 ---
 # Source: istio/charts/pilot/templates/deployment.yaml
@@ -2630,6 +2645,40 @@ spec:
       - name: istio-certs
         secret:
           secretName: "istio.istio-pilot-service-account"
+      affinity:      
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - ppc64le
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+
 ---
 # Source: istio/charts/security/templates/deployment.yaml
 # istio CA watching all namespaces
@@ -2666,3 +2715,79 @@ spec:
             - --citadel-storage-namespace=istio-system
           resources:
             {}
+            
+      affinity:      
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - ppc64le
+                - s390x
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - ppc64le
+          - weight: 2
+            preference:
+              matchExpressions:
+              - key: beta.kubernetes.io/arch
+                operator: In
+                values:
+                - s390x
+
+---
+# Source: istio/charts/security/templates/cleanup-old-ca.yaml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: istio-cleanup-old-ca
+  namespace: istio-system
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+  labels:
+    app: security
+    chart: security-0.8.0
+    release: istio
+    heritage: Tiller
+spec:
+  template:
+    metadata:
+      name: istio-cleanup-old-ca
+      labels:
+        app: security
+        release: istio
+    spec:
+      serviceAccountName: istio-cleanup-old-ca-service-account
+      containers:
+        - name: hyperkube
+          image: "quay.io/coreos/hyperkube:v1.7.6_coreos.0"
+          command:
+          - /bin/bash
+          - -c
+          - >
+              NS="-n istio-system";
+              ./kubectl get deploy istio-ca $NS;
+              if [[ $? = 0 ]]; then ./kubectl delete deploy istio-ca $NS; fi;
+              ./kubectl get serviceaccount istio-ca-service-account $NS;
+              if [[ $? = 0 ]]; then ./kubectl delete serviceaccount istio-ca-service-account $NS; fi;
+              ./kubectl get service istio-ca-ilb $NS;
+              if [[ $? = 0 ]]; then ./kubectl delete service istio-ca-ilb $NS; fi
+      restartPolicy: Never
+---
