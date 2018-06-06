@@ -1,0 +1,27 @@
+apiVersion: "config.istio.io/v1alpha2"
+kind: ServiceRole
+metadata:
+  name: mysql-apiserver
+  namespace: default
+spec:
+  rules:
+  - services: ["mysql-apiserver.default.svc.cluster.local"]
+    methods: ["GET", "POST"]
+---
+apiVersion: "config.istio.io/v1alpha2"
+kind: ServiceRoleBinding
+metadata:
+  name: mysql-apiserver
+  namespace: default
+spec:
+  subjects:
+  - user: "*"
+#  - properties:
+#      service: "front-end.default.svc.cluster.local"
+#      namespace: "default"
+#  - properties:
+#      service: "mysql.default.svc.cluster.local"
+#      namespace: "default"
+  roleRef:
+    kind: ServiceRole
+    name: "mysql-apiserver"
