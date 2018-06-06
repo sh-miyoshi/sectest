@@ -15,10 +15,7 @@ metadata:
   namespace: default
 spec:
   subjects:
-  - user: "*"
-#  - properties:
-#      service: "apiserver"
-#      namespace: "default"
+  - user: "cluster.local/ns/default/sa/sectest-mysql-apiserver"
   roleRef:
     kind: ServiceRole
     name: "mysql"

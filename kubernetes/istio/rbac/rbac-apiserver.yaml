@@ -15,7 +15,8 @@ metadata:
   namespace: default
 spec:
   subjects:
-  - user: "*"
+  - user: "cluster.local/ns/default/sa/sectest-frontend"
+  - user: "cluster.local/ns/default/sa/sectest-mysql"
 #  - properties:
 #      service: "frontend.default.svc.cluster.local"
 #      namespace: "default"

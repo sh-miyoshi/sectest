@@ -18,6 +18,7 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: sectest-frontend
       containers:
       - name: frontend
         image: docker.io/smiyoshi/sectest-frontend:latest
