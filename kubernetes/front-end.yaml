@@ -37,25 +37,3 @@ spec:
   type: ClusterIP
   selector:
     app: front-end
----
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: front-end
-  annotations:
-#    kubernetes.io/ingress.class: "istio"
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  tls:
-  - secretName: frontend-tls
-  rules:
-  - http:
-      paths:
-      - path: /
-        backend:
-          serviceName: front-end
-          servicePort: 4567
-      - path: /data
-        backend:
-          serviceName: front-end
-          servicePort: 4567
