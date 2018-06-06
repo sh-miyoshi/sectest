@@ -32,4 +32,4 @@ spec:
     - destination:
         port:
           number: 4567
-        host: front-end
+        host: frontend

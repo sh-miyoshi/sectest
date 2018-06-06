@@ -17,7 +17,7 @@ spec:
   subjects:
   - user: "*"
 #  - properties:
-#      service: "front-end.default.svc.cluster.local"
+#      service: "frontend.default.svc.cluster.local"
 #      namespace: "default"
 #  - properties:
 #      service: "mysql.default.svc.cluster.local"

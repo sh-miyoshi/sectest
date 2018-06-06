@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: front-end
+  name: frontend
   annotations:
     kubernetes.io/ingress.class: "nginx"
 spec:
@@ -12,9 +12,9 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: front-end
+          serviceName: frontend
           servicePort: 4567
       - path: /data
         backend:
-          serviceName: front-end
+          serviceName: frontend
           servicePort: 4567

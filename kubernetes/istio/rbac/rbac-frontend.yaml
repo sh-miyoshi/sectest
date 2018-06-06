@@ -1,21 +1,21 @@
 apiVersion: "config.istio.io/v1alpha2"
 kind: ServiceRole
 metadata:
-  name: front-end
+  name: frontend
   namespace: default
 spec:
   rules:
-  - services: ["front-end.default.svc.cluster.local"]
+  - services: ["frontend.default.svc.cluster.local"]
     methods: ["GET", "POST"]
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: ServiceRoleBinding
 metadata:
-  name: front-end
+  name: frontend
   namespace: default
 spec:
   subjects:
   - user: "*"
   roleRef:
     kind: ServiceRole
-    name: "front-end"
+    name: "frontend"
