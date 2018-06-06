@@ -15,4 +15,11 @@ spec:
     command:
       - sleep
       - "3600"
-  hostNetwork: true
+    volumeMounts:
+      - name: istio-certs
+        mountPath: /etc/certs
+        readOnly: true
+  volumes:
+  - name: istio-certs
+    secret:
+      secretName: istio.default

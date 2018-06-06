@@ -1,6 +1,6 @@
 # Usage
-  *) edit attacker.yaml to use istio certificates
-  kubectl apply -f attacker.yaml
+  *) kubectl delete -f attacker.yaml
+  kubectl apply -f attacker_istio.yaml
   kubectl exec -it attacker bash -n dangerarea
   nslookup mysql-apiserver.default.svc.cluster.local 10.96.0.10
   *) save ip address as <svc-ip>
