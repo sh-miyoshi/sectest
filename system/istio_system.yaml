@@ -778,19 +778,6 @@ data:
 
 
 ---
-# Source: istio/charts/egressgateway/templates/serviceaccount.yaml
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: istio-egressgateway-service-account
-  namespace: istio-system
-  labels:
-    app: egressgateway
-    chart: egressgateway-0.8.0
-    heritage: Tiller
-    release: istio
-
----
 # Source: istio/charts/ingressgateway/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -1514,22 +1501,6 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
-  name: egressrules.config.istio.io
-  labels:
-    app: istio-pilot
-spec:
-  group: config.istio.io
-  names:
-    kind: EgressRule
-    listKind: EgressRuleList
-    plural: egressrules
-    singular: egressrule
-  scope: Namespaced
-  version: v1alpha2
----
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
   name: routerules.config.istio.io
   labels:
     app: istio-pilot
@@ -1860,30 +1831,6 @@ subjects:
     namespace: istio-system
 
 ---
-# Source: istio/charts/egressgateway/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: istio-egressgateway
-  namespace: istio-system    
-  labels:
-    chart: egressgateway-0.8.0
-    release: istio
-    heritage: Tiller
-    istio: egressgateway
-spec:
-  type: ClusterIP
-  selector:
-    istio: egressgateway
-  ports:
-    -
-      name: http
-      port: 80
-    -
-      name: https
-      port: 443
-
----
 # Source: istio/charts/ingressgateway/templates/service.yaml
 apiVersion: v1
 kind: Service
@@ -2077,126 +2024,6 @@ spec:
       port: 9093
   selector:
     istio: citadel
-
----
-# Source: istio/charts/egressgateway/templates/deployment.yaml
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: istio-egressgateway
-  namespace: istio-system
-  labels:
-    app: egressgateway
-    chart: egressgateway-0.8.0
-    release: istio
-    heritage: Tiller
-    istio: egressgateway
-spec:
-  replicas: 
-  template:
-    metadata:
-      labels:
-        istio: egressgateway
-      annotations:
-        sidecar.istio.io/inject: "false"
-    spec:
-      serviceAccountName: istio-egressgateway-service-account
-      containers:
-        - name: egressgateway
-          image: "docker.io/istio/proxyv2:0.8.0"
-          imagePullPolicy: IfNotPresent
-          ports:
-            - containerPort: 80
-            - containerPort: 443
-          args:
-          - proxy
-          - router
-          - -v
-          - "2"
-          - --discoveryRefreshDelay
-          - '1s' #discoveryRefreshDelay
-          - --drainDuration
-          - '45s' #drainDuration
-          - --parentShutdownDuration
-          - '1m0s' #parentShutdownDuration
-          - --connectTimeout
-          - '10s' #connectTimeout
-          - --serviceCluster
-          - istio-egressgateway
-          - --zipkinAddress
-          - zipkin:9411
-          - --statsdUdpAddress
-          - istio-statsd-prom-bridge:9125
-          - --proxyAdminPort
-          - "15000"
-          - --controlPlaneAuthPolicy
-          - MUTUAL_TLS
-          - --discoveryAddress
-          - istio-pilot:15005
-          resources:
-            {}
-            
-          env:
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.name
-          - name: POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                apiVersion: v1
-                fieldPath: metadata.namespace
-          - name: INSTANCE_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
-          - name: ISTIO_META_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          volumeMounts:
-          - name: istio-certs
-            mountPath: /etc/certs
-            readOnly: true
-      volumes:
-      - name: istio-certs
-        secret:
-          secretName: "istio.default"
-          optional: true
-      affinity:      
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: beta.kubernetes.io/arch
-                operator: In
-                values:
-                - amd64
-                - ppc64le
-                - s390x
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 2
-            preference:
-              matchExpressions:
-              - key: beta.kubernetes.io/arch
-                operator: In
-                values:
-                - amd64
-          - weight: 2
-            preference:
-              matchExpressions:
-              - key: beta.kubernetes.io/arch
-                operator: In
-                values:
-                - ppc64le
-          - weight: 2
-            preference:
-              matchExpressions:
-              - key: beta.kubernetes.io/arch
-                operator: In
-                values:
-                - s390x
 
 ---
 # Source: istio/charts/ingressgateway/templates/deployment.yaml
