@@ -25,7 +25,7 @@ spec:
 #        imagePullPolicy: Always
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: password
+          value: ossj_sectest
         ports:
         - containerPort: 3306
 ---
