@@ -17,12 +17,6 @@ spec:
   subjects:
   - user: "cluster.local/ns/default/sa/sectest-frontend"
   - user: "cluster.local/ns/default/sa/sectest-mysql"
-#  - properties:
-#      service: "frontend.default.svc.cluster.local"
-#      namespace: "default"
-#  - properties:
-#      service: "mysql.default.svc.cluster.local"
-#      namespace: "default"
   roleRef:
     kind: ServiceRole
     name: "mysql-apiserver"
