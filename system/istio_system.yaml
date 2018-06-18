@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
- name: istio-system
+  name: istio-system
 ---
 # Source: istio/charts/mixer/templates/configmap.yaml
 apiVersion: v1
@@ -499,11 +499,6 @@ data:
     spec:
       host: istio-policy.istio-system.svc.cluster.local
       trafficPolicy:
-        portLevelSettings:
-        - port:
-            name: grpc-mixer-mtls
-          tls:
-            mode: ISTIO_MUTUAL
         connectionPool:
           http:
             http2MaxRequests: 10000
@@ -517,11 +512,6 @@ data:
     spec:
       host: istio-telemetry.istio-system.svc.cluster.local
       trafficPolicy:
-        portLevelSettings:
-        - port:
-            name: grpc-mixer-mtls
-          tls:
-            mode: ISTIO_MUTUAL
         connectionPool:
           http:
             http2MaxRequests: 10000
@@ -620,10 +610,10 @@ data:
       statsdUdpAddress: istio-statsd-prom-bridge.istio-system:9125
       #
       # Mutual TLS authentication between sidecars and istio control plane.
-      controlPlaneAuthPolicy: MUTUAL_TLS
+      controlPlaneAuthPolicy: NONE
       #
       # Address where istio Pilot service is running
-      discoveryAddress: istio-pilot.istio-system:15005
+      discoveryAddress: istio-pilot.istio-system:15007
 
 ---
 # Source: istio/templates/sidecar-injector-configmap.yaml
@@ -776,6 +766,20 @@ data:
           secretName: [[ printf "istio.%s" .Spec.ServiceAccountName ]]
           [[ end -]]
 
+
+---
+# Source: istio/charts/ingress/templates/serviceaccount.yaml
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: istio-ingress-service-account
+  namespace: istio-system
+  labels:
+    app: ingress
+    chart: ingress-0.8.0
+    heritage: Tiller
+    release: istio
 
 ---
 # Source: istio/charts/ingressgateway/templates/serviceaccount.yaml
@@ -1501,6 +1505,22 @@ spec:
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
+  name: egressrules.config.istio.io
+  labels:
+    app: istio-pilot
+spec:
+  group: config.istio.io
+  names:
+    kind: EgressRule
+    listKind: EgressRuleList
+    plural: egressrules
+    singular: egressrule
+  scope: Namespaced
+  version: v1alpha2
+---
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
   name: routerules.config.istio.io
   labels:
     app: istio-pilot
@@ -1644,6 +1664,26 @@ spec:
 
 
 ---
+# Source: istio/charts/ingress/templates/clusterrole.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: ingress
+    chart: ingress-0.8.0
+    heritage: Tiller
+    release: istio
+  name: istio-ingress-istio-system
+rules:
+- apiGroups: ["extensions"]
+  resources: ["thirdpartyresources", "ingresses"]
+  verbs: ["get", "watch", "list", "update"]
+- apiGroups: [""]
+  resources: ["configmaps", "pods", "endpoints", "services"]
+  verbs: ["get", "watch", "list"]
+
+---
 # Source: istio/charts/mixer/templates/clusterrole.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1749,6 +1789,22 @@ rules:
   verbs: ["get", "list", "update", "delete"]
 
 ---
+# Source: istio/charts/ingress/templates/clusterrolebinding.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: istio-ingress-istio-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: istio-pilot-istio-system
+subjects:
+  - kind: ServiceAccount
+    name: istio-ingress-service-account
+    namespace: istio-system
+
+---
 # Source: istio/charts/mixer/templates/clusterrolebinding.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -1831,35 +1887,62 @@ subjects:
     namespace: istio-system
 
 ---
-# Source: istio/charts/ingressgateway/templates/service.yaml
+# Source: istio/charts/ingress/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: istio-ingressgateway
-  namespace: istio-system    
+  name: istio-ingress
+  namespace: istio-system
   labels:
-    chart: ingressgateway-0.8.0
+    chart: ingress-0.8.0
     release: istio
     heritage: Tiller
-    istio: ingressgateway
+    istio: ingress
 spec:
   type: NodePort
   selector:
-    istio: ingressgateway
+    istio: ingress
   ports:
     -
       name: http
-      nodePort: 31380
+      nodePort: 32000
       port: 80
     -
       name: https
-      nodePort: 31390
-      port: 443
-    -
-      name: tcp
-      nodePort: 31400
-      port: 31400
+      port: 443 
+      nodePort: 32001 
+---
 
+---
+# Source: istio/charts/ingressgateway/templates/service.yaml
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: istio-ingressgateway
+#  namespace: istio-system    
+#  labels:
+#    chart: ingressgateway-0.8.0
+#    release: istio
+#    heritage: Tiller
+#    istio: ingressgateway
+#spec:
+#  type: LoadBalancer
+#  selector:
+#    istio: ingressgateway
+#  ports:
+#    -
+#      name: http
+#      nodePort: 31380
+#      port: 80
+#    -
+#      name: https
+#      nodePort: 31390
+#      port: 443
+#    -
+#      name: tcp
+#      nodePort: 31400
+#      port: 31400
+#
 ---
 # Source: istio/charts/mixer/templates/service.yaml
 
@@ -2026,39 +2109,38 @@ spec:
     istio: citadel
 
 ---
-# Source: istio/charts/ingressgateway/templates/deployment.yaml
+# Source: istio/charts/ingress/templates/deployment.yaml
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: istio-ingressgateway
+  name: istio-ingress
   namespace: istio-system
   labels:
-    app: ingressgateway
-    chart: ingressgateway-0.8.0
+    app: ingress
+    chart: ingress-0.8.0
     release: istio
     heritage: Tiller
-    istio: ingressgateway
+    istio: ingress
 spec:
   replicas: 
   template:
     metadata:
       labels:
-        istio: ingressgateway
+        istio: ingress
       annotations:
         sidecar.istio.io/inject: "false"
     spec:
-      serviceAccountName: istio-ingressgateway-service-account
+      serviceAccountName: istio-ingress-service-account
       containers:
-        - name: ingressgateway
-          image: "docker.io/istio/proxyv2:0.8.0"
+        - name: ingress
+          image: "docker.io/istio/proxy:0.8.0"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
             - containerPort: 443
-            - containerPort: 31400
           args:
           - proxy
-          - router
+          - ingress
           - -v
           - "2"
           - --discoveryRefreshDelay
@@ -2070,7 +2152,7 @@ spec:
           - --connectTimeout
           - '10s' #connectTimeout
           - --serviceCluster
-          - istio-ingressgateway
+          - istio-ingress
           - --zipkinAddress
           - zipkin:9411
           - --statsdUdpAddress
@@ -2078,9 +2160,9 @@ spec:
           - --proxyAdminPort
           - "15000"
           - --controlPlaneAuthPolicy
-          - MUTUAL_TLS
+          - NONE
           - --discoveryAddress
-          - istio-pilot:15005
+          - istio-pilot:8080
           resources:
             {}
             
@@ -2100,25 +2182,21 @@ spec:
               fieldRef:
                 apiVersion: v1
                 fieldPath: status.podIP
-          - name: ISTIO_META_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
           volumeMounts:
           - name: istio-certs
             mountPath: /etc/certs
             readOnly: true
-          - name: ingressgateway-certs
-            mountPath: "/etc/istio/ingressgateway-certs"
+          - name: ingress-certs
+            mountPath: /etc/istio/ingress-certs
             readOnly: true
       volumes:
       - name: istio-certs
         secret:
           secretName: "istio.default"
           optional: true
-      - name: ingressgateway-certs
+      - name: ingress-certs
         secret:
-          secretName: "istio-ingressgateway-certs"
+          secretName: istio-ingress-certs
           optional: true
       affinity:      
         nodeAffinity:
@@ -2245,7 +2323,7 @@ spec:
         - --templateFile
         - /etc/istio/proxy/envoy_policy.yaml.tmpl
         - --controlPlaneAuthPolicy
-        - MUTUAL_TLS
+        - NONE
         env:
         - name: POD_NAME
           valueFrom:
@@ -2328,7 +2406,7 @@ spec:
         - --templateFile
         - /etc/istio/proxy/envoy_telemetry.yaml.tmpl
         - --controlPlaneAuthPolicy
-        - MUTUAL_TLS
+        - NONE
         env:
         - name: POD_NAME
           valueFrom:
@@ -2439,7 +2517,7 @@ spec:
           - --templateFile
           - /etc/istio/proxy/envoy_pilot.yaml.tmpl
           - --controlPlaneAuthPolicy
-          - MUTUAL_TLS
+          - NONE
           env:
           - name: POD_NAME
             valueFrom:
