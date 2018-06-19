@@ -1,0 +1,29 @@
+# Countermeasure
+Please use Istio RBAC
+
+0. create secret(If you need)
+  cd kubernetes
+  ./make_secret.sh
+
+1. remove previous apps
+  cd kubernetes
+  kubectl delete -f .
+
+2. enable Istio RBAC
+  cd kubernetes/istio
+  kubectl apply -f istio-rbac-enable.yaml
+
+3. allow apps communication
+  cd kubernetes/istio
+  kubectl apply -f .
+
+4. deploy apps by Istio
+  cd kubernetes
+  ./istio_deploy.sh
+
+5. spoofing again
+  * please retry spoofing_pw_crt.txt
+
+5. remove apps
+  cd kubernetes
+  ./delete_istio_pod.sh

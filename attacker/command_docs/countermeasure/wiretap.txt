@@ -1,0 +1,21 @@
+# Countermeasure
+Please use Istio
+
+0. create secret(If you need)
+  cd kubernetes
+  ./make_secret.sh
+
+1. remove previous apps
+  cd kubernetes
+  kubectl delete -f .
+
+2. create apps by Istio
+  cd kubernetes
+  ./istio_deploy.sh
+
+3. wiretap again
+  * please retry wiretap
+
+4. remove apps
+  cd kubernetes
+  ./delete_istio_pod.sh
