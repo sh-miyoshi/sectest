@@ -1,0 +1,37 @@
+global:
+  controlPlaneSecurityEnabled: true
+
+  mtls:
+    enabled: true
+
+gateways:
+  enabled: true
+
+  istio-ingressgateway:
+    enabled: true
+    type: NodePort
+
+  istio-egressgateway:
+    enabled: false
+
+ingress:
+  enabled: false
+
+prometheus:
+  enabled: false
+
+sidecarInjectorWebhook:
+  enabled: false
+  enableNamespacesByDefault: false
+
+grafana:
+  enabled: false
+
+tracing:
+  enabled: false
+
+servicegraph:
+  enabled: false
+
+galley:
+  enabled: false
