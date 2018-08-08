@@ -12,8 +12,8 @@ This includes what problem are there in a service on kubernetes, and how to prot
   please see more detail at [official page](https://istio.io/docs/setup/kubernetes/quick-start/)
   - you can install istio by following steps.
     - cd system
-    - ./install_istioctl.sh
-    - kubectl apply -f istio_system.yaml
+    - vi helm_values.yaml (If you need)
+    - ./install-istio.sh
 
 - Nginx Ingress Controller
   - In order to deploy sample apps without Istio, `sectest` requires Nginx Ingress Controller.
