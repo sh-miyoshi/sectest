@@ -1,4 +1,8 @@
-# Usage
+# Overview
+  This document tell you about worse case spoofing.
+  In this case, MySQL DB password and Istio certificate are leaked.
+
+# Steps
   *) kubectl delete -f attacker.yaml
   kubectl apply -f attacker_istio.yaml
   kubectl exec -it attacker bash -n dangerarea
