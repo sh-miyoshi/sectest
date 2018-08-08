@@ -26,7 +26,7 @@ cat << EOF > istio/secret.yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: istio-ingress-certs
+  name: istio-ingressgateway-certs
   namespace: istio-system
 type: kubernetes.io/tls
 data:
