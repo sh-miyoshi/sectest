@@ -1,20 +1,16 @@
 # Countermeasure
 Please use Istio RBAC
 
-0. create secret(If you need)
-  cd kubernetes
-  ./make_secret.sh
-
 1. remove previous apps
   cd kubernetes
-  kubectl delete -f .
+  ./delete_istio_pod.sh
 
 2. enable Istio RBAC
-  cd kubernetes/istio
+  cd kubernetes/istio/rbac
   kubectl apply -f istio-rbac-enable.yaml
 
 3. allow apps communication
-  cd kubernetes/istio
+  cd kubernetes/istio/rbac
   kubectl apply -f .
 
 4. deploy apps by Istio
