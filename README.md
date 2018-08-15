@@ -11,6 +11,7 @@ This includes what problem are there in a service on kubernetes, and how to prot
   - To deploy apps in Istio, install Istio to your Kubernetes cluster.  
   please see more detail at [official page](https://istio.io/docs/setup/kubernetes/quick-start/)
   - you can install istio by following steps.
+    - curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash (Install helm command)
     - cd system
     - vi helm_values.yaml (If you need)
     - ./install-istio.sh
