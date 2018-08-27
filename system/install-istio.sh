@@ -11,7 +11,7 @@ ISTIO_VERSION="1.0.0"
 
 NAME="istio-$ISTIO_VERSION"
 
-ls istio-* > /dev/null 2>&1
+ls $NAME > /dev/null 2>&1
 # if istio data is not download yet
 if [ $? != 0 ]; then
   URL="https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${OSEXT}.tar.gz"
