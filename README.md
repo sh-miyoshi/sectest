@@ -2,8 +2,19 @@
 
 ## Overview
 
-This is a demo of security in kubernetes and Istio.
-This includes what problem are there in a service on kubernetes, and how to protect by Istio.
+This is a demo of security in kubernetes and Istio.  
+This includes what problem are there in a service on kubernetes, and how to protect by Istio.  
+This demo was used in [Open Source Summit Japan 2018](https://events.linuxfoundation.jp/events/open-source-summit-japan-2018/).  
+e slides of demo overview are [here](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio?slide=23).
+
+## Attack Overview
+
+1. Wiretap  
+    attacker try to wiretap the communication in kubernetes cluster.
+2. Spoofing(Already Password Leaked)  
+    attacker try to get secret information by using password.
+3. Worse Case Spoofing(Already Password and Certificate Leaked)  
+    attacker try to get secret information by using password and Istio certificate.
 
 ## Prerequire
 
