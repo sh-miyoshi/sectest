@@ -7,7 +7,7 @@ else
   OSEXT="linux"
 fi
 
-ISTIO_VERSION="1.0.0"
+ISTIO_VERSION="1.0.1"
 
 NAME="istio-$ISTIO_VERSION"
 
@@ -24,17 +24,7 @@ if [ $? != 0 ]; then
   \cp -f $BINDIR/istioctl /usr/local/bin/
 fi
 
-# fix helm chart template bug
-cd $NAME/install/kubernetes/helm/istio/templates/
-ls sidecar-injector-configmap.yaml.sectest.backup > /dev/null 2>&1
-if [ $? != 0 ]; then
-  cp sidecar-injector-configmap.yaml sidecar-injector-configmap.yaml.sectest.backup
-  sed -i '1,1d' sidecar-injector-configmap.yaml
-  sed -i '$d' sidecar-injector-configmap.yaml
-fi
-cd -
-
 kubectl create namespace istio-system
 helm template $NAME/install/kubernetes/helm/istio --name istio -f helm_values.yaml --namespace istio-system > istio-install.yaml
 kubectl apply -f istio-install.yaml
-rm -f istio-install.yaml
+#rm -f istio-install.yaml
