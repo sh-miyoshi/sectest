@@ -2,10 +2,10 @@
 
 kubectl apply -f istio/secret.yaml
 
-echo "waiting ingressgateway mounts secret..."
 val=`kubectl exec -ti $(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath={.items[0]..metadata.name}) -n istio-system -- ls /etc/istio/ingressgateway-certs`
 while [ "x$val" = "x" ]; do
-  sleep 3
+  echo "waiting ingressgateway mounts secret..."
+  sleep 5
   val=`kubectl exec -ti $(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath={.items[0]..metadata.name}) -n istio-system -- ls /etc/istio/ingressgateway-certs`
 done
 echo "ok!"
