@@ -28,7 +28,10 @@ grafana:
   enabled: false
 
 tracing:
-  enabled: false
+  enabled: true
+  jaeger:
+    service:
+      type: NodePort
 
 servicegraph:
   enabled: false

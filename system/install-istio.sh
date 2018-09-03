@@ -24,6 +24,15 @@ if [ $? != 0 ]; then
   \cp -f $BINDIR/istioctl /usr/local/bin/
 fi
 
+# set nodePort setting to access tracing UI
+mkdir -p $NAME/tmp
+ls $NAME/tmp/tracing-service.yaml > /dev/null 2>&1
+if [ $? != 0 ]; then
+  TRACING_DIR=$NAME/install/kubernetes/helm/istio/charts/tracing/templates
+  cp $TRACING_DIR/service.yaml $NAME/tmp/tracing-service.yaml
+  sed -i -e "/targetPort: {{ .Values.jaeger.ui.port }}/a\        nodePort: 31070\n    type: {{ .Values.jaeger.service.type }}" $TRACING_DIR/service.yaml
+fi
+
 kubectl create namespace istio-system
 helm template $NAME/install/kubernetes/helm/istio --name istio -f helm_values.yaml --namespace istio-system > istio-install.yaml
 kubectl apply -f istio-install.yaml
