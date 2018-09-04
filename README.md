@@ -5,7 +5,7 @@
 This is a demo of security in kubernetes and Istio.  
 This includes what problem are there in a service on kubernetes, and how to protect by Istio.  
 This demo was used in [Open Source Summit Japan 2018](https://events.linuxfoundation.jp/events/open-source-summit-japan-2018/).  
-e slides of demo overview are [here](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio?slide=23).
+The slides of demo overview are [here](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio?slide=23).
 
 ## Attack Overview
 
