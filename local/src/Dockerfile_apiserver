@@ -1,11 +1,17 @@
-FROM ruby:2.4.3
+FROM ruby:2.5.1-alpine3.7
 
-RUN gem install sinatra mysql2
+RUN apk --no-cache add \
+      build-base \
+      mysql-dev
+
+RUN gem instal sinatra mysql2
+
 RUN mkdir -p /app
 WORKDIR /app
-EXPOSE 4567
 COPY mysql-api-server.rb mysql-api-server.rb
+
 #ENV APP_ENV production
+EXPOSE 4567
 
 CMD ruby mysql-api-server.rb
 
