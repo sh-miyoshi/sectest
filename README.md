@@ -7,6 +7,8 @@ This includes what problem are there in a service on kubernetes, and how to prot
 This demo was used in [Open Source Summit Japan 2018](https://events.linuxfoundation.jp/events/open-source-summit-japan-2018/).  
 The slides of demo overview are [here](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio?slide=23).
 
+![image](image.png)
+
 ## Attack Overview
 
 1. Wiretap  
