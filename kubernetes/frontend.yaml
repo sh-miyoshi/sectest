@@ -28,6 +28,10 @@ spec:
           value: mysql-apiserver.default.svc.cluster.local
         ports:
           - containerPort: 4567
+        resources:
+          requests:
+            cpu: 10m
+            memory: 20Mi
 ---
 apiVersion: v1
 kind: Service

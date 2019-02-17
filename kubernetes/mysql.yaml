@@ -28,6 +28,10 @@ spec:
           value: ossj_sectest
         ports:
         - containerPort: 3306
+        resources:
+          requests:
+            cpu: 50m
+            memory: 500Mi
 ---
 apiVersion: v1
 kind: Service
