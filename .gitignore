@@ -1,3 +1,4 @@
 secret.yaml
 tmp/*
 system/istio-*
+.DS_Store

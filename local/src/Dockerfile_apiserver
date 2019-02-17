@@ -8,10 +8,10 @@ RUN gem instal sinatra mysql2
 
 RUN mkdir -p /app
 WORKDIR /app
-COPY mysql-api-server.rb mysql-api-server.rb
+COPY mysql_api_server.rb mysql_api_server.rb
 
 #ENV APP_ENV production
 EXPOSE 4567
 
-CMD ruby mysql-api-server.rb
+CMD ruby mysql_api_server.rb
 
