@@ -1,6 +1,7 @@
 #!/bin/bash
 
 kubectl delete -f istio/rbac --ignore-not-found=true
+kubectl delete -f istio/admin-api-ingress-gateway.yaml --ignore-not-found=true
 
 kubectl delete -f istio/secret.yaml
 kubectl delete -f istio/frontend-ingress-gateway.yaml
