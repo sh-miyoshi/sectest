@@ -1,8 +1,13 @@
 global:
   controlPlaneSecurityEnabled: true
-
   mtls:
     enabled: true
+
+pilot:
+  resources:
+    requests:
+      cpu: "20m"
+      memory: "256Mi"
 
 gateways:
   enabled: true
