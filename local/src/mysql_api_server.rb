@@ -23,9 +23,3 @@ post '/api', provides: :json do
     status 400
   end
 end
-
-get '/admin/info' do
-  return {
-    "info": 'admin user info'
-  }.to_json
-end
