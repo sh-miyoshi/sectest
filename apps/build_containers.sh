@@ -28,10 +28,10 @@ rm $tmpfile
 DOCKER_REGISTRY_URL=`echo $DOCKER_REGISTRY_URL | sed -e "s/http:\/\///g"`
 
 containers=($APISERVER_CONTAINER_NAME $MYSQL_CONTAINER_NAME $FRONTEND_CONTAINER_NAME)
-dockerfile_names=(apiserver mysql front_end)
+app_dirs=(apiserver mysql frontend)
 
 cd src
 for ((i=0; i < ${#containers[@]}; i++)); do
-     docker build -t $DOCKER_REGISTRY_URL/${containers[$i]}:$BUILD_CONTAINER_VERSION . -f Dockerfile_${dockerfile_names[$i]} --build-arg http_proxy="$http_proxy" --build-arg https_proxy="$https_proxy"
+  docker build -t $DOCKER_REGISTRY_URL/${containers[$i]}:$BUILD_CONTAINER_VERSION ./${app_dirs[$i]} --build-arg http_proxy="$http_proxy" --build-arg https_proxy="$https_proxy"
 done
 
