@@ -16,14 +16,20 @@ type mysqlData struct {
 	Secret string `json:"secret"`
 }
 
-// type userInfo struct {
-// 	user     string
-// 	password string
-// }
+type userInfo struct {
+	User     string `json:"user"`
+	Password string `json:"password"`
+}
 
 func handlerMySQLAPI(w http.ResponseWriter, req *http.Request) {
-	user := "root"               // params[user]
-	password := "ossj_sectest"   // params[password]
+	var params userInfo
+	if err := json.NewDecoder(req.Body).Decode(&params); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user := params.User
+	password := params.Password
 	url := "tcp(127.0.0.1:3306)" // ENV['MYSQL_ADDR']
 	dbname := "secret"
 
