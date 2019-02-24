@@ -2,8 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"database/sql"
 
@@ -30,10 +32,10 @@ func handlerMySQLAPI(w http.ResponseWriter, req *http.Request) {
 
 	user := params.User
 	password := params.Password
-	url := "tcp(127.0.0.1:3306)" // ENV['MYSQL_ADDR']
+	url := os.Getenv("MYSQL_ADDR")
 	dbname := "secret"
 
-	db, err := sql.Open("mysql", user+":"+password+"@"+url+"/"+dbname)
+	db, err := sql.Open("mysql", user+":"+password+"@tcp("+url+":3306)/"+dbname)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -78,6 +80,11 @@ func handlerMySQLAPI(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+	if os.Getenv("MYSQL_ADDR") == "" {
+		fmt.Println("Please set MYSQL_ADDR in environment")
+		return
+	}
+
 	r := mux.NewRouter()
 	r.HandleFunc("/api", handlerMySQLAPI).Methods("POST")
 
