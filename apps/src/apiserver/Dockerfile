@@ -1,17 +1,15 @@
-FROM ruby:2.5.1-alpine3.7
+FROM golang:1.11 AS builder
 
-RUN mkdir -p /myapp
-WORKDIR /myapp
+COPY . /workdir
+WORKDIR /workdir
+
+RUN go build
+
+
+FROM ubuntu:18.04
+
 EXPOSE 4567
-#ENV APP_ENV production
 
-RUN apk --no-cache add \
-      build-base \
-      mysql-dev
+COPY --from=builder /work/apiserver /usr/local/bin/apiserver
 
-RUN gem instal sinatra mysql2
-
-COPY main.rb main.rb
-
-CMD ruby main.rb
-
+CMD apiserver
