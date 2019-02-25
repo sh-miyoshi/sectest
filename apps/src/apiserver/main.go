@@ -11,6 +11,8 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+
+	adminapi "github.com/sh-miyoshi/sectest/apiserver/adminapi"
 )
 
 type mysqlData struct {
@@ -88,7 +90,8 @@ func main() {
 	r := mux.NewRouter()
 	r.HandleFunc("/api", handlerMySQLAPI).Methods("POST")
 
-	http.Handle("/", r)
 	log.Print("start server")
-	http.ListenAndServe(":4567", nil)
+
+	go adminapi.AdminServer()
+	http.ListenAndServe(":4567", r)
 }
