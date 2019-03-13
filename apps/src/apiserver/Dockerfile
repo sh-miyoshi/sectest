@@ -3,7 +3,7 @@ FROM golang:1.11 AS builder
 COPY . /workdir
 WORKDIR /workdir
 
-RUN go build
+RUN GO111MODULE=on go build
 
 
 FROM ubuntu:18.04
