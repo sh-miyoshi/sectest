@@ -1,23 +1,29 @@
 package adminapi
 
 import (
-	"json"
+	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
 
+// AdminInfoResponse is response struct for api of /admin/info
 type AdminInfoResponse struct {
 	Message string `json:"msg"`
 }
 
 func handlerInfoAPI(w http.ResponseWriter, req *http.Request) {
 	data := AdminInfoResponse{
-		Message: "admin value",
+		Message: "admin user info",
 	}
 	res, err := json.Marshal(data)
 	log.Printf("response data: %v\n", data)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	w.Write(res)
 }
