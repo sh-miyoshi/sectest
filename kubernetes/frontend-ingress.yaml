@@ -8,8 +8,8 @@ spec:
   tls:
   - secretName: frontend-tls
   rules:
-  - host: carbon.iolitecontrol.net
-  - http:
+  - host: *
+    http:
       paths:
       - path: /
         backend:
