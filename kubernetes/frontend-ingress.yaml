@@ -8,8 +8,7 @@ spec:
   tls:
   - secretName: frontend-tls
   rules:
-  - host: *
-    http:
+  - http:
       paths:
       - path: /
         backend:
