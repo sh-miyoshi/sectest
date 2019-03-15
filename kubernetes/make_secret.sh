@@ -8,6 +8,7 @@ crt_value=`base64 tls.crt | tr -d '\n'`
 key_value=`base64 tls.key | tr -d '\n'`
 
 cd -
+rm -rf $tmpdir
 
 cat << EOF > secret.yaml
 apiVersion: v1
