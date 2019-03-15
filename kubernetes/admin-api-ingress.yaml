@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: adminapi
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  tls:
+  - secretName: frontend-tls
+  rules:
+  - http:
+      paths:
+      - path: /admin/info
+        backend:
+          serviceName: mysql-apiserver
+          servicePort: 9000

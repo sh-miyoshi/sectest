@@ -27,7 +27,10 @@ spec:
         - name: MYSQL_ADDR
           value: mysql.default.svc.cluster.local
         ports:
-          - containerPort: 4567
+          - name: http
+            containerPort: 4567
+          - name: adminapi
+            containerPort: 9000
         resources:
           requests:
             cpu: 10m
@@ -45,6 +48,9 @@ spec:
   - name: http
     port: 4567
     targetPort: 4567
+  - name: adminapi
+    port: 9000
+    targetPort: 9000
   type: ClusterIP
   selector:
     app: mysql-apiserver
