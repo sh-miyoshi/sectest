@@ -14,7 +14,7 @@ cat << EOF > secret.yaml
 apiVersion: v1
 kind: Secret
 metadata:
-  name: frontend-tls
+  name: sectest-tls
   namespace: default
 type: kubernetes.io/tls
 data:

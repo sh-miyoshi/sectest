@@ -6,15 +6,15 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
 spec:
   tls:
-  - secretName: frontend-tls
+    - secretName: sectest-tls
   rules:
-  - http:
-      paths:
-      - path: /
-        backend:
-          serviceName: frontend
-          servicePort: 4567
-      - path: /data
-        backend:
-          serviceName: frontend
-          servicePort: 4567
+    - http:
+        paths:
+          - path: /
+            backend:
+              serviceName: frontend
+              servicePort: 4567
+          - path: /data
+            backend:
+              serviceName: frontend
+              servicePort: 4567
