@@ -20,21 +20,21 @@ spec:
     spec:
       serviceAccountName: sectest-mysql-apiserver
       containers:
-      - name: mysql-apiserver
-        image: docker.io/smiyoshi/sectest-apiserver:latest
-#        imagePullPolicy: Always
-        env:
-        - name: MYSQL_ADDR
-          value: mysql.default.svc.cluster.local
-        ports:
-          - name: http
-            containerPort: 4567
-          - name: adminapi
-            containerPort: 9000
-        resources:
-          requests:
-            cpu: 10m
-            memory: 20Mi
+        - name: mysql-apiserver
+          image: docker.io/smiyoshi/sectest-apiserver:latest
+          #        imagePullPolicy: Always
+          env:
+            - name: MYSQL_ADDR
+              value: mysql.default.svc.cluster.local
+          ports:
+            - name: http
+              containerPort: 4567
+            - name: adminapi
+              containerPort: 9000
+          resources:
+            requests:
+              cpu: 10m
+              memory: 20Mi
 ---
 apiVersion: v1
 kind: Service
@@ -45,12 +45,12 @@ metadata:
   namespace: default
 spec:
   ports:
-  - name: http
-    port: 4567
-    targetPort: 4567
-  - name: adminapi
-    port: 9000
-    targetPort: 9000
+    - name: http-user
+      port: 4567
+      targetPort: 4567
+    - name: http-adminapi
+      port: 9000
+      targetPort: 9000
   type: ClusterIP
   selector:
     app: mysql-apiserver

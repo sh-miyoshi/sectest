@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: frontend
+spec:
+  hosts:
+    - "*"
+  gateways:
+    - sectest-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+        - uri:
+            prefix: /data
+      route:
+        - destination:
+            port:
+              number: 4567
+            host: frontend

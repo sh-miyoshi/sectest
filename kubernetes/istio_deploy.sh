@@ -10,7 +10,8 @@ while [ "x$val" = "x" ]; do
 done
 echo "ok!"
 
-kubectl apply -f istio/frontend-ingress-gateway.yaml
+kubectl apply -f istio/ingress-gateway.yaml
+kubectl apply -f istio/frontend-virtual-service.yaml
 
 kubectl apply -f <( istioctl kube-inject -f mysql.yaml )
 kubectl apply -f <( istioctl kube-inject -f mysql-apiserver.yaml )
