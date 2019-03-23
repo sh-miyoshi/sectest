@@ -2,7 +2,8 @@
 
 ## Overview
 
-This is a source code of API server for MySQL DB.
+This is a source code of API server for MySQL DB.  
+The app is built by golang.(required: 1.11~)
 
 ## APIs
 
