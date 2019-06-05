@@ -1,45 +1,90 @@
 global:
-  controlPlaneSecurityEnabled: true
-  mtls:
-    enabled: true
+  proxy:
+    accessLogFile: "/dev/stdout"
+    resources:
+      requests:
+        cpu: 10m
+        memory: 40Mi
 
-pilot:
-  resources:
-    requests:
-      cpu: "20m"
-      memory: "256Mi"
-
-gateways:
-  enabled: true
-
-  istio-ingressgateway:
-    enabled: true
-    type: NodePort
-
-  istio-egressgateway:
-    enabled: false
-
-ingress:
-  enabled: false
-
-prometheus:
-  enabled: false
+  disablePolicyChecks: false
 
 sidecarInjectorWebhook:
   enabled: false
-  enableNamespacesByDefault: false
+  rewriteAppHTTPProbe: false
 
+pilot:
+  traceSampling: 100.0
+  resources:
+    requests:
+      cpu: 10m
+      memory: 100Mi
+    limits:
+      cpu: 100m
+      memory: 200Mi
+
+mixer:
+  policy:
+    enabled: true
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+
+  telemetry:
+    enabled: true
+    resources:
+      requests:
+        cpu: 50m
+        memory: 100Mi
+      limits:
+        cpu: 100m
+        memory: 100Mi
+ 
+  adapters:
+    stdio:
+      enabled: true
+ 
 grafana:
-  enabled: false
+  enabled: true
+  service:
+    type: NodePort
 
 tracing:
   enabled: true
-  jaeger:
-    service:
-      type: NodePort
+  service:
+    type: NodePort
 
-servicegraph:
-  enabled: false
+kiali:
+  enabled: true
+  createDemoSecret: true
 
-galley:
-  enabled: false
+gateways:
+  istio-ingressgateway:
+    type: NodePort
+    resources:
+      requests:
+        cpu: 10m
+        memory: 40Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+  istio-egressgateway:
+    enabled: false
+    resources:
+      requests:
+        cpu: 10m
+        memory: 40Mi
+      limits:
+        cpu: 100m
+        memory: 128Mi
+
+global:
+  controlPlaneSecurityEnabled: true
+
+  mtls:
+    enabled: true
+  configValidation: false
