@@ -52,7 +52,7 @@ if [ $? != 0 ]; then
   kubectl create namespace istio-system
 fi
 
-helm template istio-1.1.7/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system > istio-init-install.yaml
+helm template $NAME/install/kubernetes/helm/istio-init --name istio-init --namespace istio-system > istio-init-install.yaml
 kubectl apply -f istio-init-install.yaml
 
 n=`kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l`
