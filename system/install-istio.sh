@@ -13,7 +13,7 @@ else
   OSEXT="linux"
 fi
 
-ISTIO_VERSION="1.1.7"
+ISTIO_VERSION="1.2.2"
 
 NAME="istio-$ISTIO_VERSION"
 
@@ -56,7 +56,7 @@ helm template $NAME/install/kubernetes/helm/istio-init --name istio-init --names
 kubectl apply -f istio-init-install.yaml
 
 n=`kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l`
-while [ $n != 53 ]; do
+while [ $n != 23 ]; do
   echo "Waiting Istio CRDs are committed ..."
   sleep 2
   n=`kubectl get crds | grep 'istio.io\|certmanager.k8s.io' | wc -l`
