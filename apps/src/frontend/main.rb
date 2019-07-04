@@ -20,14 +20,20 @@ post '/data' do
     'user' => params[:user],
     'password' => params[:password]
   }.to_json
-  res = Net::HTTP.start(url.host, url.port) do |http|
-    http.request(req)
-  end
-  if res.code.to_i >= 200 && res.code.to_i < 300
-    @val = JSON.parse(res.body)
-  else
-    @val = []
-    @val.push('Error')
+  begin
+    res = Net::HTTP.start(url.host, url.port) do |http|
+      http.request(req)
+    end
+    if res.code.to_i >= 200 && res.code.to_i < 300
+      @val = JSON.parse(res.body)
+    else
+      @val = []
+      @val.push(res.msg)
+      @val.push(res.body)
+    end
+  rescue
+      @val = []
+      @val.push("Failed to request API server")
   end
 
   erb :index
