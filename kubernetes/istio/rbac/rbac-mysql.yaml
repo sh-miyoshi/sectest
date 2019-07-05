@@ -6,7 +6,9 @@ metadata:
 spec:
   rules:
   - services: ["mysql.default.svc.cluster.local"]
-    methods: ["*"]
+    constraints:
+    - key: "destination.port"
+      values: ["3306"]
 ---
 apiVersion: "rbac.istio.io/v1alpha1"
 kind: ServiceRoleBinding
