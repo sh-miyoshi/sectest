@@ -30,14 +30,14 @@ if [ $? != 0 ]; then
   \cp -f $BINDIR/istioctl /usr/local/bin/
 fi
 
-## set nodePort setting to access tracing UI
-#mkdir -p $NAME/tmp
-#ls $NAME/tmp/tracing-service.yaml > /dev/null 2>&1
-#if [ $? != 0 ]; then
-#  TRACING_DIR=$NAME/install/kubernetes/helm/istio/charts/tracing/templates
-#  cp $TRACING_DIR/service.yaml $NAME/tmp/tracing-service.yaml
-#  sed -i -e "/targetPort: {{ .Values.jaeger.ui.port }}/a\        nodePort: 31070\n    type: {{ .Values.jaeger.service.type }}" $TRACING_DIR/service.yaml
-#fi
+# set Service Type setting to access kiali UI
+mkdir -p $NAME/tmp
+ls $NAME/tmp/kiali-service.yaml > /dev/null 2>&1
+if [ $? != 0 ]; then
+  KIALI_DIR=$NAME/install/kubernetes/helm/istio/charts/kiali/templates
+  cp $KIALI_DIR/service.yaml $NAME/tmp/kiali-service.yaml
+  sed -i -e "/spec:/a\  type: {{ .Values.service.type }}" $KIALI_DIR/service.yaml
+fi
 
 # install helm command
 which helm > /dev/null 2>&1

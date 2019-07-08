@@ -60,6 +60,8 @@ tracing:
 kiali:
   enabled: true
   createDemoSecret: true
+  service:
+    type: NodePort
 
 gateways:
   istio-ingressgateway:
