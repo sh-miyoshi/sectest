@@ -44,8 +44,8 @@ ls $NAME/tmp/tracing-service.yaml > /dev/null 2>&1
 if [ $? != 0 ]; then
   TRACING_DIR=$NAME/install/kubernetes/helm/istio/charts/tracing/templates
   cp $TRACING_DIR/service.yaml $NAME/tmp/tracing-service.yaml
-  # sed -i -e "s/port: 80/port: 8080/" service.yaml
-  sed -i -e "/{{ end}}/a\    type: {{ .Values.service.type }}" service.yaml
+  # sed -i -e "s/port: 80/port: 8080/" $TRACING_DIR/service.yaml
+  sed -i -e "/{{ end}}/a\    type: {{ .Values.service.type }}" $TRACING_DIR/service.yaml
 fi
 
 # install helm command
