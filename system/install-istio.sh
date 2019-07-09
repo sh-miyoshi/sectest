@@ -39,6 +39,15 @@ if [ $? != 0 ]; then
   sed -i -e "/spec:/a\  type: {{ .Values.service.type }}" $KIALI_DIR/service.yaml
 fi
 
+# set Service Type setting to access tracing UI
+ls $NAME/tmp/tracing-service.yaml > /dev/null 2>&1
+if [ $? != 0 ]; then
+  TRACING_DIR=$NAME/install/kubernetes/helm/istio/charts/tracing/templates
+  cp $TRACING_DIR/service.yaml $NAME/tmp/tracing-service.yaml
+  # sed -i -e "s/port: 80/port: 8080/" service.yaml
+  sed -i -e "/{{ end}}/a\    type: {{ .Values.service.type }}" service.yaml
+fi
+
 # install helm command
 which helm > /dev/null 2>&1
 if [ $? != 0 ]; then
