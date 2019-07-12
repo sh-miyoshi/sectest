@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "stopping previous services ..."
+bash stop_service_local.sh
+
+echo "deploying new services ..."
+
 tmpfile=$(mktemp)
 
 cat default.conf | while read line; do
@@ -32,7 +37,7 @@ docker run --name sec_test_mysql -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -d 
 mysql_ip=`docker inspect --format "{{.NetworkSettings.IPAddress}}" sec_test_mysql`
 docker run --name sec_test_apiserver -d -e MYSQL_ADDR=$mysql_ip $DOCKER_REGISTRY_URL/$APISERVER_CONTAINER_NAME:$BUILD_CONTAINER_VERSION > /dev/null
 api_ip=`docker inspect --format "{{.NetworkSettings.IPAddress}}" sec_test_apiserver`
-docker run --name sec_test_frontend -d -p 4567:4567 -e API_SERVER_URL=$api_ip $DOCKER_REGISTRY_URL/$FRONTEND_CONTAINER_NAME:$BUILD_CONTAINER_VERSION > /dev/null
+docker run --name sec_test_frontend -d -p 4567:4567 -e http_proxy=$http_proxy -e https_proxy=$https_proxy -e API_SERVER_URL=$api_ip $DOCKER_REGISTRY_URL/$FRONTEND_CONTAINER_NAME:$BUILD_CONTAINER_VERSION > /dev/null
 
 echo "Deploy was finished."
 echo "Please access to http://<your server address>:4567"

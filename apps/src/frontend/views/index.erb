@@ -13,6 +13,11 @@
         <%= v %><br />
       <% end %>
     <% end %>
-    <a href="https://www.google.com">Go to Google</a>
+    <form action="outside" method="GET">
+      <input type="submit" value="get text from internet">
+    </form>
+    <% if @out_val then %>
+      <%= @out_val %>
+    <% end %>
   </body>
 </html>
