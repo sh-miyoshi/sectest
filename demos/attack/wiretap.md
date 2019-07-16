@@ -19,7 +19,7 @@ We can wiretap by tcpdump command.
     ```bash
     kubectl get pods -o wide
     *) copy ip address of mysql-apiserver pod as <pod-ip>
-    cd /path/to/sectest/attacker
+    cd /path/to/sectest/apps/attacker
     kubectl apply -f attacker.yaml
     kubectl exec -it attacker bash -n dangerarea
     tcpdump -xX -B 65536 dst host <pod-ip> and port 4567 -i weave

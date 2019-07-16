@@ -17,7 +17,7 @@ MySQL DB password was already leaked, and attacker try to connect with the passw
 2. spoofing by using password
 
     ```bash
-    cd /path/to/sectest/attacker
+    cd /path/to/sectest/apps/attacker
     kubectl apply -f attacker.yaml
     kubectl exec -it attacker bash -n dangerarea
     nslookup mysql-apiserver.default.svc.cluster.local 10.96.0.10
