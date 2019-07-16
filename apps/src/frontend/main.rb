@@ -59,9 +59,7 @@ end
 
 get '/outside' do
   @val = nil
-  #uri = "https://www.google.co.jp/"
   uri = "http://25.io/toau/audio/sample.txt"
-  #uri = 'https://raw.githubusercontent.com/sh-miyoshi/sectest/master/README.md'
   url = URI.parse(uri)
   @out_val = Net::HTTP.get(url)
   erb :index

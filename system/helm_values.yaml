@@ -5,8 +5,13 @@ global:
       requests:
         cpu: 10m
         memory: 40Mi
-
   disablePolicyChecks: false
+  controlPlaneSecurityEnabled: true
+  mtls:
+    enabled: true
+  configValidation: false
+#  outboundTrafficPolicy:
+#    mode: REGISTRY_ONLY
 
 sidecarInjectorWebhook:
   enabled: false
@@ -75,7 +80,7 @@ gateways:
         memory: 128Mi
 
   istio-egressgateway:
-    enabled: false
+    enabled: true
     resources:
       requests:
         cpu: 10m
@@ -83,10 +88,3 @@ gateways:
       limits:
         cpu: 100m
         memory: 128Mi
-
-global:
-  controlPlaneSecurityEnabled: true
-
-  mtls:
-    enabled: true
-  configValidation: false
