@@ -1,63 +1,77 @@
 # Security Test Samples
 
-## Overview
+English version is [here](./README_en.md)
 
-This is a demo of basic security in Kubernetes and Istio.  
-This includes what problem are there in a service on Kubernetes, and how to protect by Istio.  
-This demo was used in [Open Source Summit Japan 2018](https://events.linuxfoundation.jp/events/open-source-summit-japan-2018/).  
-The slides of demo overview are [here](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio?slide=23).
+## 概要
 
-![image](assets/image.png)
+このリポジトリではKubernetesとIstioを使用する場合の基本的なセキュリティ機能を解説するためのサンプルアプリを提供しています。  
+このリポジトリには大きく分けて以下の二つのdemoが含まれています。
 
-## Attack Overview
+- **RBAC Demo**
 
-1. Wiretap  
-    attacker try to wiretap the communication in kubernetes cluster.
-2. Spoofing(Already Password Leaked)  
-    attacker try to get secret information by using password.
-3. Worse Case Spoofing(Already Password and Certificate Leaked)  
-    attacker try to get secret information by using password and Istio certificate.
+    RBAC DemoはIstio RBACをどのように使えばいいのかというサンプルデモです。  
+    詳細は[demos/rbac](demos/rbac/README.md)にあります。  
+    \*) このデモは[Cloud Native Days Tokyo 2019](https://cloudnativedays.jp/cndt2019/)で使用しました。
 
-## Prerequire
+- **Attack Demo**
 
-This demo requires Istio and Ingress Controller.  
-In order to deploy sample apps without Istio, `sectest` requires Ingress Controller.
+    Attack DemoはKubernetesを使用する際にどういった攻撃が考えられてどうすればその攻撃から守れるのかというDemoです。
+    詳細は[demos/attack](demos/attack/README.md)にあります。
 
-- Istio
-  - Please see [official page](https://istio.io/docs/setup/kubernetes/quick-start/).
-  - Or you can install istio by following steps.
-    - git clone [https://github.com/sh-miyoshi/sectest.git](https://github.com/sh-miyoshi/sectest.git) (checkout this repository)
+    1. 盗聴  
+        攻撃者がクラスタ内の通信の盗聴しようとします
+    2. なりすまし(パスワードが漏洩した場合)  
+        attacker try to get secret information by using password.
+    3. より悪い状態でのなりすまし(パスワードと証明書が漏洩した場合)  
+        attacker try to get secret information by using password and Istio certificate.
+
+    ![image](assets/image.png)
+
+    \*) このデモは[Open Source Summit Japan 2018](https://events.linuxfoundation.jp/events/open-source-summit-japan-2018/)で使用しました。
+    発表スライドは[Speaker Deck](https://speakerdeck.com/smiyoshi/advanced-security-on-kubernetes-with-istio)にあります。
+
+## 事前準備
+
+このアプリではIstioとIngress Controllerを使用します。  
+Ingress Controllerを必要とする理由はIstioを使用しないでアプリを立ち上げる場合にIngressリソースを使って外からアクセスできるようにしているためです。
+
+- Istioのインストール
+  - [公式ページ](https://istio.io/docs/setup/kubernetes/quick-start/)を参考にインストールしてください。
+  - もしくは、`sectest`内にあるインストールスクリプトを使用しても構いません
+    - git clone [https://github.com/sh-miyoshi/sectest.git](https://github.com/sh-miyoshi/sectest.git) (このリポジトリをクローンする)
     - cd system
-    - vi helm_values.yaml (If you need)
+    - vi helm_values.yaml (必要であれば)
     - ./install-istio.sh
 
-- Ingress Controller
-  - You can use Ingress Controller of Managed Kubernetes Services(GKE, AKS, EKS, ...)
-  - Or install Nginx Ingress Controller locally by following step.
+- Ingress Controllerのインストール
+  - 各プロバイダー(GKE, AKS, EKS, ...)のマネージドサービスを利用すればいいです
+  - もしくは、Local上に以下の手順でNginx Ingress Controllerを作成します
     - kubectl apply -f system/ingress-controller-nginx.yaml
 
-## Usage
+## サンプルアプリのデプロイ手順(Istioなし)
 
-1. deploy sample application
-    - create secret file
-    ``` text
+1. デプロイ手順
+
+    ```bash
+    # secretファイルの作成
     cd kubernetes
     ./make_secret.sh
-    ```
 
-    - deploy apps by kubectl command and access from your web browser
-    ``` text
-    cd kubernetes
+    # アプリのデプロイ
     kubectl apply -f .
     * access to https://<ingress-controller-address>
+
+    # アプリの動作確認
+    # ブラウザ上でユーザ名とパスワードを入力すると、秘密のメッセージを取得できます
+    # User: "root"
+    # Password: "ossj_sectest"
     ```
 
-    - check program  
-    please input user name and password. If your apps works normally, you can get secret message.
-    ``` text
-    User: "root"
-    Password: "ossj_sectest"
+2. 削除手順
+
+    ```bash
+    cd kubernetes
+    kubectl delete -f .
     ```
 
-2. create attacker and protect by Istio  
-    please see attacker/command_docs/\*.txt and attacker/command_docs/countermeasure/\*.txt for more detail.
+## サンプルアプリのデプロイ手順(Istioあり)
