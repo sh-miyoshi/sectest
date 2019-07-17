@@ -75,3 +75,21 @@ Ingress Controllerを必要とする理由はIstioを使用しないでアプリ
     ```
 
 ## サンプルアプリのデプロイ手順(Istioあり)
+
+1. デプロイ手順
+
+    ```bash
+    # secretファイルの作成
+    cd kubernetes
+    ./make_secret.sh
+
+    # アプリのデプロイ
+    ./istio_deploy.sh
+    ```
+
+2. 削除手順
+
+    ```bash
+    cd kubernetes
+    ./delete_istio_pod.sh
+    ```

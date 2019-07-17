@@ -2,45 +2,45 @@
 
 ## Overview
 
-This file shows how to use Istio RBAC for basic application.
+このファイルではIstio RBACの使用方法について述べる。
 
 ## Usage
 
-1. deploy Istio
+1. Istioのデプロイ
 
-    Deploy Istio to your cluster with **mTLS mode**.
+    Istioを**mTLS mode**をONにしてクラスタにデプロイしてください。
 
-2. deploy apps with Istio sidecar
+2. アプリのデプロイ
 
     ```bash
     cd /path/to/sectest/kubernetes
     ./istio_deploy.sh
     ```
 
-3. check access to your app
+3. アプリの動作確認
 
-    Open your brower, and access to [https://\<istio-gateway-addr\>](https://localhost:31390).  
-    You should be able to access the app.  
-    In this app, if you input {name: root, password: ossj_sectest}, you can get _very secret_ information.
+    ブラウザを開き、[https://\<istio-gateway-addr\>](https://localhost:31390)にアクセスする。  
+    正常通りアプリが動作していることを確認する  
+    アプリ上で {name: root, password: ossj_sectest}を入力すると, _very secret information_を取得できるはずです。
 
-4. enabling Istio RBAC
+4. Istio RBACを有効化する
 
     ```bash
     cd /path/to/sectest/kubernetes
     kubectl apply -f istio/rbac/istio-rbac-enable.yaml
     ```
 
-5. check access to your app
+5. 再度アプリの動作確認
 
-    Open your brower, and access to [https://\<istio-gateway-addr\>](https://localhost:31390).  
-    If RBAC enabled, you can see following message.  
-    \*) It may take a few minutes.
+    ブラウザを開き、[https://\<istio-gateway-addr\>](https://localhost:31390)にアクセスする。  
+    もしRBACが有効であれば、以下のようなメッセージが表示されます  
+    \*) 若干時間がかかる場合があります
 
     ```text
     RBAC: access denied
     ```
 
-6. allow access to the app
+6. Istio RBACでアプリ通信を許可する
 
     ```bash
     cd /path/to/sectest/kubernetes
@@ -49,12 +49,12 @@ This file shows how to use Istio RBAC for basic application.
     kubectl apply -f istio/rbac/rbac-mysql.yaml
     ```
 
-7. check access to your app
+7. 再度アプリの動作確認
 
-    Open your brower, and access to [https://\<istio-gateway-addr\>](https://localhost:31390).  
-    You should be able to access the app.
+    ブラウザを開き、[https://\<istio-gateway-addr\>](https://localhost:31390)にアクセスする。  
+    再度アクセスできるようになっているはずです。
 
-8. delete apps
+8. アプリの削除
 
     ```bash
     cd /path/to/sectest/kubernetes
